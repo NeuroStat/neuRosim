@@ -9,7 +9,7 @@ Author: Marijke Welvaert with contributions from Joke Durnez, Beatrijs
 Maintainer: Marijke Welvaert <marijke.welvaert@gmail.com>
 Depends: R (>= 3.1.1), deSolve
 Description: The package allows users to generate fMRI time series or 4D data. Some high-level functions are created for fast data generation with only a few arguments and a diversity of functions to define activation and noise. For more advanced users it is possible to use the low-level functions and manipulate the arguments.
-License: GPL (>= 2)
+License: GPL (>= 2) | file LICENSE
 LazyLoad: yes
 Repository: CRAN
 Date/Publication: 2015-01-10 10:01:21
