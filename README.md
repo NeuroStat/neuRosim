@@ -21,5 +21,5 @@ install.packages('devtools')
 
 To install the stable branch, run:
 ```{r}
-devtools::install_github("NeuroStat/NeuRRoStat", ref = "master")
+devtools::install_github("NeuroStat/neuRosim", ref = "master")
 ```
