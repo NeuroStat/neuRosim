@@ -1,0 +1,28 @@
+useDynLib("neuRosim", .registration=TRUE)
+
+# import required package
+import(deSolve)
+
+# export functions defined in this package
+export(
+       "stimfunction",
+       "balloon",
+       "canonicalHRF",
+       "gammaHRF",
+       "specifydesign",
+       "specifyregion",
+       "systemnoise",
+       "rrice",
+       "lowfreqdrift",
+       "physnoise",
+       "tasknoise",
+       "temporalnoise",
+       "spatialnoise",
+       "GaussSmoothKernel",
+       "Sim.3D.GRF",
+       "simprepTemporal",
+       "simprepSpatial",
+       "simTSfmri",
+       "simTSrestingstate",
+       "simVOLfmri"
+      )

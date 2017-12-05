@@ -1,0 +1,24 @@
+citHeader("To cite neuRosim in publications use:")
+
+citEntry(entry = "Article",
+  title        = "{neuRosim}: An {R} Package for Generating fMRI Data",
+  author       = personList(as.person("Marijke Welvaert"),
+                   as.person("Joke Durnez"),
+                   as.person("Beatrijs Moerkerke"),
+                   as.person("Geert Verdoolaege"),
+                   as.person("Yves Rosseel")),
+  journal      = "Journal of Statistical Software",
+  year         = "2011",
+  volume       = "44",
+  number       = "10",
+  pages        = "1--18",
+  url          = "http://www.jstatsoft.org/v44/i10/",
+
+  textVersion  =
+  paste("Marijke Welvaert, Joke Durnez, Beatrijs Moerkerke, Geert Verdoolaege, Yves Rosseel (2011).",
+        "neuRosim: An R Package for Generating fMRI Data.",
+        "Journal of Statistical Software, 44(10), 1-18.",
+        "URL http://www.jstatsoft.org/v44/i10/.")
+)
+
+
