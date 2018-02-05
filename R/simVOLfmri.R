@@ -1,5 +1,5 @@
 simVOLfmri <-
-function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL, noise=c("none", "white", "temporal", "spatial", "low-frequency", "physiological", "task-related", "mixture"), type=c("gaussian","rician"), spat=c("corr", "gaussRF", "gammaRF"), weights, verbose=TRUE, rho.temp=0.2, rho.spat=0.75, freq.low=128, freq.heart=1.17, freq.resp=0.2, FWHM=4, gamma.shape=6, gamma.rate=1, vee=1, template){
+function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL, noise=c("none", "white", "temporal", "spatial", "low-frequency", "physiological", "task-related", "mixture"), type=c("gaussian","rician"), spat=c("corr", "gaussRF", "gammaRF"), weights, verbose=TRUE, rho.temp=0.2, rho.spat=0.75, freq.low=128, freq.heart=1.17, freq.resp=0.2, FWHM=4, gamma.shape=6, gamma.rate=1, vee=1, template, voxdim){
 
   if((length(design)!=0) && (length(image)==0)){
     stop("image list is missing")
@@ -48,9 +48,9 @@ function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL
     if(length(weights)!=6){
       stop("Weights vector should have 6 elements.")
     }
-    if(sum(weights)!=1){
-      stop("The sum of the weights vector should be equal to 1.")
-    }
+#    if(sum(weights)!=1){
+#      stop("The sum of the weights vector should be equal to 1.")
+#    }
   }
   if(!is.vector(base)){
     if(!all(dim(base)==dim)){
@@ -118,7 +118,7 @@ function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL
     n <- temporalnoise(dim=dim, sigma=sigma, nscan=nscan, rho=rho.temp, verbose=verbose, template=template)
   }
   if(noise=="low-frequency"){
-    n <- lowfreqdrift(dim=dim, freq=freq.low, nscan=nscan, TR=TR, verbose=verbose, template=template)
+    n <- lowfreqdrift(dim=dim, freq=freq.low, nscan=nscan, TR=TR, verbose=verbose, template=template, sigma=sigma)
   }
   if(noise=="physiological"){
     n <- physnoise(dim=dim, sigma=sigma, nscan=nscan, TR=TR, freq.heart=freq.heart, freq.resp=freq.resp, verbose=verbose, template=template)
@@ -143,7 +143,7 @@ function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL
     if(weights[3]==0){
       n.low <- 0
     } else {
-      n.low <- lowfreqdrift(dim=dim, freq=freq.low, nscan=nscan, TR=TR, verbose=verbose, template=template)
+      n.low <- lowfreqdrift(dim=dim, freq=freq.low, nscan=nscan, TR=TR, verbose=verbose, template=template, sigma=sigma)
     }
     if(weights[4]==0){
       n.phys <- 0
@@ -158,7 +158,7 @@ function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL
     if(weights[6]==0){
       n.spat <- 0
     } else {
-      n.spat <- spatialnoise(dim=dim, sigma=sigma, nscan=nscan, method=spat, type=type, vee=vee, rho=rho.spat, FWHM=FWHM, gamma.shape=gamma.shape, gamma.rate=gamma.rate, template=template, verbose=verbose)
+      n.spat <- spatialnoise(dim=dim, sigma=sigma, nscan=nscan, method=spat, type=type, vee=vee, rho=rho.spat, FWHM=FWHM, gamma.shape=gamma.shape, gamma.rate=gamma.rate, template=template, verbose=verbose, voxdim=voxdim)
     }
     w <- weights
     n <- (w[1]* n.white + w[2]*n.temp + w[3]*n.low + w[4]*n.phys + w[5]*n.task + w[6]*n.spat)/sqrt(sum(w^2))
