@@ -124,7 +124,7 @@ function(design=list(), image=list(), base=0, dim, nscan=NULL, TR=NULL, SNR=NULL
     n <- physnoise(dim=dim, sigma=sigma, nscan=nscan, TR=TR, freq.heart=freq.heart, freq.resp=freq.resp, verbose=verbose, template=template)
   }
   if(noise=="task-related"){
-    n <- tasknoise(act.image=act, sigma=sigma, type=type, vee=vee)
+    n <- tasknoise(act.image=act.image, sigma=sigma, type=type, vee=vee)
   }
   if(noise=="spatial"){
     n <- spatialnoise(dim=dim, sigma=sigma, nscan=nscan, method=spat, type=type, rho=rho.spat, FWHM=FWHM, gamma.shape=gamma.shape, gamma.rate=gamma.rate, vee=vee, template=template, verbose=verbose)
