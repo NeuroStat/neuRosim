@@ -1,5 +1,5 @@
 lowfreqdrift <-
-function(dim, freq=128, nscan, TR, template, verbose=TRUE){
+function(dim, freq=128, nscan, TR, template, verbose=TRUE, sigma){
 
 	spm_drift <- function(N, K) {
     	  n <- 0:(N-1)
@@ -19,6 +19,10 @@ function(dim, freq=128, nscan, TR, template, verbose=TRUE){
 	drift.base <- spm_drift(nscan, n)[,-1]  
         drift.image <- array(rep(1, prod(dim)), dim=c(dim))
   	drift.array <- drift.image %o% rowSums(drift.base)
+
+        if(!missing(sigma)){  
+        	drift.array = drift.array*sigma/sd(drift.array) # scale std. dev. to sigma 
+        }
 
         if(!missing(template)){
  		if(length(dim(template))>3){

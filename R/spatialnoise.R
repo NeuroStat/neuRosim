@@ -1,5 +1,5 @@
 spatialnoise <-
-function(dim, sigma, nscan, method=c("corr", "gammaRF", "gaussRF"), type=c("gaussian","rician"), rho=0.75, FWHM=4, gamma.shape=6, gamma.rate=1, vee=1, template, verbose=TRUE){
+function(dim, sigma, nscan, method=c("corr", "gammaRF", "gaussRF"), type=c("gaussian","rician"), rho=0.75, FWHM=4, gamma.shape=6, gamma.rate=1, vee=1, template, verbose=TRUE, voxdim){
 
         if(length(dim)>3){
                 stop("Image space with more than three dimensions is not supported.")
@@ -70,15 +70,19 @@ function(dim, sigma, nscan, method=c("corr", "gammaRF", "gaussRF"), type=c("gaus
                 	noise[-ix] <- 0
         	}
 	}
-	if(method=="gaussRF"){
+	if(method=="gaussRF" | method=="gammaRF"){
 		#require(AnalyzeFMRI, quietly=TRUE)
-		s <- diag(FWHM^2, 3)/(8*log(2))
-                if(length(dim)==2){
-                        dim.RF <- c(dim,1)
-                } else {
-                        dim.RF <- dim
-                }
-		voxdim <- rep(1, length(dim.RF))
+        ksd = FWHM/(sqrt(8*log(2))) # in mm
+		s <- diag(ksd^2, 3)
+        if(length(dim)==2){
+                dim.RF <- c(dim,1)
+        } else {
+                dim.RF <- dim
+        }
+        if (missing(voxdim)){
+            cat("spatial noise:  missing voxdim\n")
+			voxdim <- rep(1, length(dim.RF))
+        }
 		if(!missing(template)){
 			if(length(dim(template))>3){
 				stop("Template should be a 2D or 3D array.")
@@ -87,50 +91,30 @@ function(dim, sigma, nscan, method=c("corr", "gammaRF", "gaussRF"), type=c("gaus
 		} else {
 			m <- array(1, dim=dim.RF)
 		}
-		if(FWHM%%2==0){
-			ksize <- FWHM + 1
-		} else {
-			ksize <- FWHM
-		}
-	
-		noise <- array(0, dim=c(dim.RF,nscan))
-		for(z in 1:nscan){
-			noise[,,,z] <- array(c(Sim.3D.GRF(d=dim.RF,voxdim=voxdim,sigma=s,ksize=ksize,mask=m,type="field")$mat), dim=dim.RF)
-		}
-		noise <- array(c(noise), dim=c(dim,nscan))
-	}
-	if(method=="gammaRF"){
-                #require(AnalyzeFMRI, quietly=TRUE)
-                s <- diag(FWHM^2, 3)/(8*log(2))
-                if(length(dim)==2){
-                        dim.RF <- c(dim,1)
-                } else {
-                        dim.RF <- dim
-                }
-                voxdim <- rep(1, length(dim.RF))
-                if(!missing(template)){
-			if(length(dim(template))>3){
-				stop("Template should be a 2D or 3D array.")
-			}
-                        m <- array(ifelse(template!=0, 1, 0), dim=dim.RF)
-                } else {
-                        m <- array(1, dim=dim.RF)
-                }
-                if(FWHM%%2==0){
-                        ksize <- FWHM + 1
-                } else {
-                        ksize <- FWHM
+
+                # make the kernel at least 5sd wide
+                ksize = ceiling(5.0*ksd/min(voxdim)) # (mm x vox/mm = vox; kernel is isotropic; width governed by highest resolution / smallest voxel dimension)
+                if (ksize%%2 == 0){
+                	ksize = ksize + 1
                 }
 
-                noise <- array(0, dim=c(dim.RF,nscan))
-                for(z in 1:nscan){
-                        n <- Sim.3D.GRF(d=dim.RF,voxdim=voxdim,sigma=s,ksize=ksize,mask=m,type="field")$mat
-			gamma.n <- qgamma(pnorm(c(n)), shape=gamma.shape, rate=gamma.rate)
-			noise[,,,z] <- array(gamma.n, dim=dim.RF)
+		noise <- array(0, dim=c(dim.RF,nscan))
+	        if(method=="gaussRF"){
+			for(z in 1:nscan){
+				noise[,,,z] <- array(c(Sim.3D.GRF(d=dim.RF,voxdim=voxdim,sigma=s,ksize=ksize,mask=m,type="field")$mat), dim=dim.RF)
+		   	}
+                	scale = sigma
+                } else {
+                	for(z in 1:nscan){
+                        	n <- Sim.3D.GRF(d=dim.RF,voxdim=voxdim,sigma=s,ksize=ksize,mask=m,type="field")$mat
+   				gamma.n <- qgamma(pnorm(c(n)), shape=gamma.shape, rate=gamma.rate)
+   				noise[,,,z] <- array(gamma.n, dim=dim.RF)
+                   	}
+                   	scale = sigma*gamma.rate/sqrt(gamma.shape)
                 }
-                noise <- array(c(noise), dim=c(dim,nscan))
+		noise <- array(c(noise), dim=c(dim,nscan))
+                noise = noise * scale # scale std. dev. to sigma
 	}
 
 	return(noise)
 }
-
