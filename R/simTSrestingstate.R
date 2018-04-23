@@ -6,6 +6,11 @@ simTSrestingstate <- function(nscan, base=0, TR, SNR=NULL, noise=c("none", "whit
 		if(missing(type)){
 			type <- "gaussian"
 		}
+	if(noise != 'none'){
+	 if(is.null(SNR)){
+      		stop('Please provide a SNR when noise is other than none.')
+	   }
+	 }
 	if(noise=="mixture"){
 		if(missing(weights)){
 			stop("Weights should be provided with noise=mixture.")
