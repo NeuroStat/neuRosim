@@ -29,7 +29,8 @@ function(act.image, sigma, type=c("gaussian","rician"), vee=1){
 	}
 	ix <- which(zapsmall(act.image)!=0)
 	noise[-ix] <- 0
+	
+	# Rescale noise
 	noise <- noise*sigma/sd(noise)
-
 	return(noise)
 }

@@ -116,5 +116,6 @@ function(dim, sigma, nscan, method=c("corr", "gammaRF", "gaussRF"), type=c("gaus
                 noise = noise * scale # scale std. dev. to sigma
 	}
 
+  # Noise is already rescaled
 	return(noise)
 }

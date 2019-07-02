@@ -26,7 +26,9 @@ function(dim, nscan, type=c("gaussian","rician"), sigma, vee=1, template, verbos
 		ix <- which(template.time!=0)
 		noise[-ix] <- 0
 	}
-
+  
+  # Rescale noise
+  noise <- noise*sigma/sd(noise)
 	return(noise)
 }
 
