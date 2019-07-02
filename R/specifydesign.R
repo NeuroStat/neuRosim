@@ -59,16 +59,16 @@ function(onsets, durations, totaltime, TR, effectsize, accuracy=0.1, conv=c("non
 		if(conv=="gamma"){
 			s <- stimfunction(totaltime, onsets[[i]], durations[[i]], accuracy)
 		    if(!is.null(param)){
-			s.conv <- convolve(gammaHRF(seq(accuracy,totaltime,accuracy), param[[i]], verbose=FALSE), rev(s))
+			s.conv <- convolve(gammaHRF(seq(accuracy,totaltime,accuracy), param[[i]], verbose=FALSE), rev(s), type="open")
 		    }else{
-			s.conv <- convolve(gammaHRF(seq(accuracy,totaltime,accuracy), verbose=FALSE), rev(s))
+			s.conv <- convolve(gammaHRF(seq(accuracy,totaltime,accuracy), verbose=FALSE), rev(s), type="open")
 		    }
 			s.conv <- s.conv/max(s.conv)
 			design.matrix[,i] <- effectsize[[i]]*s.conv[ix]
 		}
 		if(conv=="double-gamma"){
                         s <- stimfunction(totaltime, onsets[[i]], durations[[i]], accuracy)
-                        s.conv <- convolve(canonicalHRF(seq(accuracy,totaltime,accuracy), param[[i]], verbose=FALSE), rev(s))
+                        s.conv <- convolve(canonicalHRF(seq(accuracy,totaltime,accuracy), param[[i]], verbose=FALSE), rev(s), type="open")
 			s.conv <- s.conv/max(s.conv)
                         design.matrix[,i] <- effectsize[[i]]*s.conv[ix]
  		}
