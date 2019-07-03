@@ -9,10 +9,30 @@ physnoise <-
     t <- 1:nscan
     
     HRdrift <- sin(HB*t) + cos(RR*t)
-    sigma.HR <- sd(HRdrift)
-    HRweight <- sigma/sigma.HR
+    drift.image <- array(rep(1, prod(dim)), dim=c(dim))
+    drift.array <- drift.image %o% HRdrift
+    #sigma.HR <- sd(HRdrift)
+    #HRweight <- sigma.HR^2/(sigma.HR^2 + sigma^2)
+    #Sigweight <- sigma^2/(sigma.HR^2 + sigma^2)
+    #w <- c(Sigweight, HRweight)
     
-    noise <- array(rnorm(prod(dim)*nscan, 0, 1), dim=c(dim, nscan)) + HRweight*HRdrift
+    # Rescale the drift noise
+    #HRweight <- HRweight * sigma / sd(HRweight)
+    
+    # Have Gaussian noise with sd = 1
+    #gausNoise <- array(rnorm(prod(dim)*nscan, 0, 1), dim=c(dim, nscan))
+    
+    #gausNoise <- array(rnorm(prod(dim)*nscan, 0, 1), dim=c(dim, nscan))
+    #scaledNoise <- gausNoise
+    #scaledNoise <- gausNoise * sigma / sd(gausNoise)
+    
+    #noise <- array(rnorm(prod(dim)*nscan, 0, 1), dim=c(dim, nscan)) + HRweight*HRdrift
+    #noise <- array(0, dim=c(dim, nscan)) + HRweight*HRdrift
+    #noise <- (array(rnorm(prod(dim)*nscan, 0, 1), dim=c(dim, nscan)) * (1/HRweight)^2) + HRweight*HRdrift
+    #noise <- sqrt(1/HRweight)*gausNoise + sqrt(HRweight)*HRdrift
+    #noise <- (Sigweight*gausNoise + HRweight*HRdrift)/sqrt(sum(w^2))
+    #noise <- array(1, dim=c(dim, nscan)) * HRdrift
+    noise <- drift.array
     
     if(!missing(template)){
       if(length(dim(template))>3){
@@ -27,4 +47,12 @@ physnoise <-
     noise <- noise*sigma/sd(noise)
     return(noise)
   }
+
+
+phyIm <- physnoise(dim = dim, nscan = nscan, TR = TR,
+                   sigma = sigma)
+# check the image
+var(phyIm) # should be equal to sigma^2
+threeDim_var <- apply(phyIm, c(1,2,3), var)
+mean(threeDim_var) # should be approx sigma^2
 
