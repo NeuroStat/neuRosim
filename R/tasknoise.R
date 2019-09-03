@@ -13,11 +13,16 @@ function(act.image, sigma, type=c("gaussian","rician"), vee=1){
 		stop("The activation array has more than 4 dimensions")
 	}
 	
-  #Array indicating location of active voxels			
-  indvar <- apply(act.image, c(1,2,3), var) == 0
-  indmean <- apply(act.image, c(1,2,3), mean) == 0
-  indimage <-  array(1-(indvar*indmean), dim = dim)
-	
+  if (length(dim) > 1){
+	  #Array indicating location of active voxels			
+	  indvar <- apply(act.image, seq(length(dim)), var) == 0
+	  indmean <- apply(act.image, seq(length(dim)), mean) == 0
+	  indimage <-  array(1-(indvar*indmean), dim = dim)
+  } else {
+	  #If there is only one active voxel
+	  indimage <- 1
+  }
+	  
 	if(length(dim)==0){
 	    if(type=="gaussian"){
 		noise <-rnorm(length(act.image), 0, sigma)
