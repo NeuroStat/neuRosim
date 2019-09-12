@@ -23,9 +23,9 @@ If not updated/installed, run:
 install.packages('devtools')
 ```
 
-# Install the package
+# Install the development version
 
-To install the stable branch, run:
+To install the development version, install from Github:
 ```{r}
 devtools::install_github("NeuroStat/neuRosim", ref = "master")
 ```
