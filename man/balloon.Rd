@@ -49,7 +49,7 @@ The microtime resolution ensures a high-precision generation of the response. Mo
 
 \examples{
 \dontrun{(
-s <- rep(rep(0,10), rep(1,10), 5)
+s <- rep(c(rep(0,10), rep(1,10)), 5)
 T <- 100
 it <- 0.1
 out <- balloon(s, T, it) 
